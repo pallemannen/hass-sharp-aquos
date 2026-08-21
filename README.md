@@ -5,6 +5,39 @@
 
 Home Assistant integration for Sharp Aquos TVs creating a Media Player entity to control your TV through Home Assistant.
 
+## Installation
+
+1. Add this repository to HACS as a custom repository (category "Integration"), then install "Sharp Aquos TV".
+2. Restart Home Assistant.
+3. Go to **Settings → Devices & Services → Add Integration**, search for "Sharp Aquos TV", and fill in:
+   - **TV IP address**
+   - **Username** (Only if you set it on the TV, otherwise blank.)
+   - **Password** (Only if you set it on the TV, otherwise blank.)
+   - **Power on enabled** If you turn this off, Home Assistant will not be able to turn the TV on.
+  
+   Note: Even with Power on enable turned on, you will have to turn it on manually at least once for HA to be able to turn it on going forward. On some models, the TV may display a Sharp Aquos logo on the screen when it is "turned off".
+
+No YAML editing or manually edited config files needed - everything is set up through the UI.
+
+## What you get
+
+**Commands**
+- Power on/off
+- Mute on/off
+- Volume control
+- Input control (4 HDMI, 1 COMP, 1 tuner)
+- Channel select/up/down
+
+**Sensors**
+In addition to the current state of the above controls:
+- Model info
+- Aspect ratio
+- AV mode
+- Brightness
+- Signal strength
+
+All of these are created automatically when you set up the integration - nothing extra to configure. Note: Not all models support all commands and sensors.
+
 ## Compatibility
 
 This integration should work with network-enabled Sharp Aquos LCD/LED televisions released between roughly 2011 and 2016. Models include:
@@ -15,6 +48,7 @@ This integration should work with network-enabled Sharp Aquos LCD/LED television
 
 - You need a network enabled TV - either with an ethernet RJ-45 jack or a WiFi module.
 - Look for "IP Control", "Remote Control Settings" or "AQUOS Remote Control" in the settings, and turn it on.
+- Optional: You should also be able to set a username and password, and the listening TCP port, in the TV settings (depending on model).
 
 ## Workaround for older TV's
 
@@ -52,39 +86,6 @@ As TVs grew larger and thinner, Sharp replaced the bulky DB9 housing with an RS-
 - Early Smart Central Arrays: Sub-series lines including the LE830U, LE835U, and early LE650U sets.
 
 For commercial digital signage displays or interactive conference boards (like the PN-L703B series), Sharp exposes serial controls under a small screw-down service plate on the back cover housing.
-
-## Installation
-
-1. Add this repository to HACS as a custom repository (category "Integration"), then install "Sharp Aquos TV".
-2. Restart Home Assistant.
-3. Go to **Settings → Devices & Services → Add Integration**, search for "Sharp Aquos TV", and fill in:
-   - **TV IP address**
-   - **Username** (Only if you set it on the TV, otherwise blank.)
-   - **Password** (Only if you set it on the TV, otherwise blank.)
-   - **Power on enabled** If you turn this off, Home Assistant will not be able to turn the TV on.
-  
-   Note: Even with Power on enable turned on, you will have to turn it on manually at least once for HA to be able to turn it on going forward. On some models, the TV may display a Sharp Aquos logo on the screen when it is "turned off".
-
-No YAML editing or manually edited config files needed - everything is set up through the UI.
-
-## What you get
-
-**Commands**
-- Power on/off
-- Mute on/off
-- Volume control
-- Input control (4 HDMI, 1 COMP, 1 tuner)
-- Channel select/up/down
-
-**Sensors**
-In addition to the current state of the above controls:
-- Model info
-- Aspect ratio
-- AV mode
-- Brightness
-- Signal strength
-
-All of these are created automatically when you set up the integration - nothing extra to configure.
 
 ## HACS
 
