@@ -49,6 +49,19 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
         self.tv = tv
         self._power_on_enabled = power_on_enabled
         self._model: str | None = None
+        self._warned_fields: set[str] = set()
+
+    def _log_field_failure(self, field: str, err: Exception) -> None:
+        """Warn once per field, then drop to debug - a command a given TV
+        model doesn't support will fail on every single poll forever, and
+        that shouldn't turn into permanent log spam. But the first failure
+        needs to be visible (not debug-only) or there's no way to tell a
+        genuine problem from a field just being None."""
+        if field not in self._warned_fields:
+            self._warned_fields.add(field)
+            _LOGGER.warning("Could not read %s (won't repeat this warning): %s", field, err)
+        else:
+            _LOGGER.debug("Could not read %s: %s", field, err)
 
     async def _async_update_data(self) -> AquosData:
         try:
@@ -65,7 +78,7 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
         try:
             await self.tv.set_power_on_command_settings(self._power_on_enabled)
         except (AquosConnectionError, AquosCommandError) as err:
-            _LOGGER.debug("Could not update RSPW setting: %s", err)
+            self._log_field_failure("power_on_command_settings", err)
 
         if not is_on:
             return AquosData(is_on=False, model=self._model)
@@ -74,7 +87,7 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
             try:
                 self._model = await self.tv.model()
             except (AquosConnectionError, AquosCommandError) as err:
-                _LOGGER.debug("Could not read model: %s", err)
+                self._log_field_failure("model", err)
 
         data = AquosData(is_on=True, model=self._model)
         for attr, coro in (
@@ -93,6 +106,6 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
             except (AquosConnectionError, AquosCommandError) as err:
                 # Not every model supports every command - leave that field
                 # as None rather than failing the whole update.
-                _LOGGER.debug("Could not read %s: %s", attr, err)
+                self._log_field_failure(attr, err)
 
         return data
