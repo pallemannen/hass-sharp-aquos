@@ -108,6 +108,27 @@ class AquosTV:
         except ValueError:
             return status
 
+    async def _send_int(self, code: str, value: str | int = "?") -> int:
+        """Like _send, but raises AquosCommandError instead of letting a
+        malformed/unsupported reply blow up as a bare ValueError.
+
+        Every numeric field (volume, aspect ratio, backlight, etc.) goes
+        through this. Without it, a TV replying with anything that isn't
+        "OK"/"ERR"/a clean integer - e.g. a command it silently doesn't
+        support - raised an uncaught ValueError that wasn't one of the
+        AquosConnectionError/AquosCommandError types callers already handle,
+        silently aborting whatever loop was awaiting it (and everything
+        after it in that loop, with no log line at all).
+        """
+        result = await self._send(code, value)
+        if isinstance(result, bool):
+            # _send() returns True for a bare "OK" reply - never valid for
+            # a numeric query.
+            raise AquosCommandError(f"{code}{value} returned OK instead of a number")
+        if isinstance(result, int):
+            return result
+        raise AquosCommandError(f"{code}{value} returned non-numeric reply: {result!r}")
+
     # --- Power / system -------------------------------------------------
 
     async def power(self, on: bool | None = None) -> bool:
@@ -129,21 +150,21 @@ class AquosTV:
     async def volume(self, level: int | None = None) -> int:
         """Get or set volume, 0-60."""
         if level is None:
-            return int(await self._send("VOLM"))
+            return await self._send_int("VOLM")
         await self._send("VOLM", max(0, min(60, int(level))))
         return level
 
     async def mute(self, muted: bool | None = None) -> bool:
         """Get or set mute state. MUTE1 = muted, MUTE2 = unmuted (deterministic)."""
         if muted is None:
-            return int(await self._send("MUTE")) == 1
+            return await self._send_int("MUTE") == 1
         await self._send("MUTE", 1 if muted else 2)
         return muted
 
     async def input_source(self, source_code: int | None = None) -> int:
         """Get or set the input (0=TV/Antenna via ITVD, 1-5 via IAVD)."""
         if source_code is None:
-            return int(await self._send("IAVD"))
+            return await self._send_int("IAVD")
         if source_code == 0:
             await self._send("ITVD", 0)
         else:
@@ -151,23 +172,23 @@ class AquosTV:
         return source_code
 
     async def aspect_ratio(self) -> int:
-        return int(await self._send("WIDE"))
+        return await self._send_int("WIDE")
 
     async def audio_selection(self) -> int:
-        return int(await self._send("ACHN"))
+        return await self._send_int("ACHN")
 
     async def av_mode(self) -> int:
-        return int(await self._send("AVMD"))
+        return await self._send_int("AVMD")
 
     async def backlight(self) -> int:
-        return int(await self._send("OPGD"))
+        return await self._send_int("OPGD")
 
     # --- Tuner ------------------------------------------------------------
 
     async def channel(self, number: int | None = None) -> int:
         """Get the current channel, or direct-tune to one (CHTR)."""
         if number is None:
-            return int(await self._send("CHTR"))
+            return await self._send_int("CHTR")
         await self._send("CHTR", number)
         return number
 
@@ -178,4 +199,4 @@ class AquosTV:
         await self._send("CHDN", 1)
 
     async def signal_strength(self) -> int:
-        return int(await self._send("IFGS"))
+        return await self._send_int("IFGS")
