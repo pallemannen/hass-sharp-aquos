@@ -1,0 +1,36 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "username": "Username",
+          "password": "Password",
+          "name": "Name",
+          "power_on_enabled": "Allow Home Assistant to turn the TV on"
+        },
+        "data_description": {
+          "host": "The TV's IP address, or the address of an RS-232 bridge (e.g. ESPHome) relaying to it.",
+          "username": "Only needed if you set one on the TV. Leave blank otherwise.",
+          "password": "Only needed if you set one on the TV. Leave blank otherwise.",
+          "power_on_enabled": "You must turn the TV on manually at least once after enabling this before Home Assistant can turn it on."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the TV. Check the host, port, and that IP/network control is enabled in the TV's settings."
+    },
+    "abort": {
+      "already_configured": "This TV is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "aspect_ratio": { "name": "Aspect ratio" },
+      "av_mode": { "name": "AV mode" },
+      "backlight": { "name": "Backlight" },
+      "signal_strength": { "name": "Signal strength" }
+    }
+  }
+}

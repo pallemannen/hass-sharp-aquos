@@ -1,0 +1,11 @@
+{
+  "domain": "aquostv",
+  "name": "Sharp Aquos TV",
+  "codeowners": ["@pallemannen"],
+  "config_flow": true,
+  "documentation": "https://github.com/pallemannen/hass-sharp-aquos",
+  "issue_tracker": "https://github.com/pallemannen/hass-sharp-aquos/issues",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "version": "0.1.0"
+}
