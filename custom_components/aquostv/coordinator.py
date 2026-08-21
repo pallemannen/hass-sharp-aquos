@@ -90,19 +90,28 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
                 self._log_field_failure("model", err)
 
         data = AquosData(is_on=True, model=self._model)
-        for attr, coro in (
-            ("volume", self.tv.volume()),
-            ("is_muted", self.tv.mute()),
-            ("source_code", self.tv.input_source()),
-            ("aspect_ratio", self.tv.aspect_ratio()),
-            ("audio_selection", self.tv.audio_selection()),
-            ("av_mode", self.tv.av_mode()),
-            ("backlight", self.tv.backlight()),
-            ("channel", self.tv.channel()),
-            ("signal_strength", self.tv.signal_strength()),
+        # Each of these is its own full TCP round trip (connect, auth, two
+        # command steps) and can legitimately take seconds. Look the method
+        # up and call it fresh right before awaiting it, rather than
+        # building every coroutine object upfront in a tuple literal - if
+        # an earlier field's await gets cancelled (a config reload mid-poll,
+        # a slow/unresponsive TV blowing past the update interval), any
+        # coroutine that was constructed but never reached is silently
+        # dropped un-awaited, which is exactly what a "coroutine was never
+        # awaited" RuntimeWarning means.
+        for attr, method_name in (
+            ("volume", "volume"),
+            ("is_muted", "mute"),
+            ("source_code", "input_source"),
+            ("aspect_ratio", "aspect_ratio"),
+            ("audio_selection", "audio_selection"),
+            ("av_mode", "av_mode"),
+            ("backlight", "backlight"),
+            ("channel", "channel"),
+            ("signal_strength", "signal_strength"),
         ):
             try:
-                setattr(data, attr, await coro)
+                setattr(data, attr, await getattr(self.tv, method_name)())
             except (AquosConnectionError, AquosCommandError) as err:
                 # Not every model supports every command - leave that field
                 # as None rather than failing the whole update.
