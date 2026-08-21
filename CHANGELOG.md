@@ -6,6 +6,20 @@ follow the integration's `manifest.json` version.
 
 ## [Unreleased]
 
+### Fixed
+- A TV replying with anything other than `"OK"`/`"ERR"`/a clean integer to
+  a numeric field (volume, aspect ratio, backlight, signal strength, etc.)
+  raised a bare `ValueError` that wasn't caught anywhere - it wasn't one
+  of the `AquosConnectionError`/`AquosCommandError` types the per-field
+  poll loop and every caller actually handle. That silently killed the
+  rest of that poll cycle (and its `return`), so any field ordered after
+  the bad one went dark with no log line at all, and no data from that
+  cycle - including fields that succeeded earlier in the same cycle -
+  ever made it back to the entities. All numeric reads now go through a
+  `_send_int` helper that turns this into a proper `AquosCommandError`.
+
+## [0.1.1] - 2026-08-21
+
 ### Changed
 - `power_on_enabled` now defaults to `true` - most setups want Home
   Assistant to be able to turn the TV on, and leaving it off by default
