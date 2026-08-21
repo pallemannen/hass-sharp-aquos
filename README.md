@@ -3,11 +3,11 @@
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?category=Integration&repository=hass-sharp-aquos&owner=pallemannen)
 
-Home Assistant integration for Sharp Aquos TVs.
+Home Assistant integration for Sharp Aquos TVs creating a Media Player entity to control your TV through Home Assistant.
 
 ## Compatibility
 
-This integration should work with network-enabled Sharp Aquos LCD/LED televisions released between roughly 2011 and 2016. This includes:
+This integration should work with network-enabled Sharp Aquos LCD/LED televisions released between roughly 2011 and 2016. Models include:
 - LE Series (High-End & Mid-Range): Models starting with LC- and ending with LE or U (e.g., LC-60LE650U, LC-70LE732U, LC-52LE835U).
 - UD / EQ / SQ Series (Early 4K/Premium): Flagship models like the LC-UD27U, LC-EQ10U, and LC-SQ15U.
 
