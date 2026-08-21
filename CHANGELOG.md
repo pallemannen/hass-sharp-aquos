@@ -6,6 +6,18 @@ follow the integration's `manifest.json` version.
 
 ## [Unreleased]
 
+### Changed
+- Field read failures are now logged differently depending on what kind of
+  failure it was, instead of both warning once and then dropping to debug.
+  A dropped connection (`AquosConnectionError`) warns on every occurrence -
+  these integrations typically talk to older TVs over wifi that was never
+  great to begin with, so an occasional drop is expected, ongoing behavior,
+  not a one-time fact. A command the TV actively rejects or doesn't support
+  (`AquosCommandError`) still only warns once, since that's a stable fact
+  about the model that won't change poll to poll.
+
+## [0.1.2] - 2026-08-21
+
 ### Fixed
 - A TV replying with anything other than `"OK"`/`"ERR"`/a clean integer to
   a numeric field (volume, aspect ratio, backlight, signal strength, etc.)

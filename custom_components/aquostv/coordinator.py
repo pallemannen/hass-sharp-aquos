@@ -52,11 +52,22 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
         self._warned_fields: set[str] = set()
 
     def _log_field_failure(self, field: str, err: Exception) -> None:
-        """Warn once per field, then drop to debug - a command a given TV
-        model doesn't support will fail on every single poll forever, and
-        that shouldn't turn into permanent log spam. But the first failure
-        needs to be visible (not debug-only) or there's no way to tell a
-        genuine problem from a field just being None."""
+        """Log a field read failure, treating the two error types
+        differently since they mean different things:
+
+        - AquosConnectionError: the TV just didn't answer this round trip.
+          These integrations are commonly talking to 10-15 year old TVs over
+          wifi that was never great to begin with, so a connection dropping
+          occasionally is expected, ongoing behaviour, not a one-time fact
+          worth suppressing after the first occurrence - warn every time.
+        - AquosCommandError: the TV answered but rejected/doesn't support
+          this specific command. That's a stable fact about this model that
+          won't change poll to poll, so it only needs to be surfaced once
+          (falling back to debug afterward) or it's just permanent log spam.
+        """
+        if isinstance(err, AquosConnectionError):
+            _LOGGER.warning("Could not read %s: %s", field, err)
+            return
         if field not in self._warned_fields:
             self._warned_fields.add(field)
             _LOGGER.warning("Could not read %s (won't repeat this warning): %s", field, err)
