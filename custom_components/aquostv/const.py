@@ -8,7 +8,7 @@ DEFAULT_PORT = 10002
 DEFAULT_USERNAME = ""
 DEFAULT_PASSWORD = ""
 DEFAULT_NAME = "Sharp Aquos TV"
-DEFAULT_POWER_ON_ENABLED = False
+DEFAULT_POWER_ON_ENABLED = True
 
 # Poll cadence. The TV is reached over a fresh TCP connection per command, so a
 # full update can be several sequential round trips - keep this well above the

@@ -49,6 +49,19 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
         self.tv = tv
         self._power_on_enabled = power_on_enabled
         self._model: str | None = None
+        self._warned_fields: set[str] = set()
+
+    def _log_field_failure(self, field: str, err: Exception) -> None:
+        """Warn once per field, then drop to debug - a command a given TV
+        model doesn't support will fail on every single poll forever, and
+        that shouldn't turn into permanent log spam. But the first failure
+        needs to be visible (not debug-only) or there's no way to tell a
+        genuine problem from a field just being None."""
+        if field not in self._warned_fields:
+            self._warned_fields.add(field)
+            _LOGGER.warning("Could not read %s (won't repeat this warning): %s", field, err)
+        else:
+            _LOGGER.debug("Could not read %s: %s", field, err)
 
     async def _async_update_data(self) -> AquosData:
         try:
@@ -65,7 +78,7 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
         try:
             await self.tv.set_power_on_command_settings(self._power_on_enabled)
         except (AquosConnectionError, AquosCommandError) as err:
-            _LOGGER.debug("Could not update RSPW setting: %s", err)
+            self._log_field_failure("power_on_command_settings", err)
 
         if not is_on:
             return AquosData(is_on=False, model=self._model)
@@ -74,25 +87,34 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
             try:
                 self._model = await self.tv.model()
             except (AquosConnectionError, AquosCommandError) as err:
-                _LOGGER.debug("Could not read model: %s", err)
+                self._log_field_failure("model", err)
 
         data = AquosData(is_on=True, model=self._model)
-        for attr, coro in (
-            ("volume", self.tv.volume()),
-            ("is_muted", self.tv.mute()),
-            ("source_code", self.tv.input_source()),
-            ("aspect_ratio", self.tv.aspect_ratio()),
-            ("audio_selection", self.tv.audio_selection()),
-            ("av_mode", self.tv.av_mode()),
-            ("backlight", self.tv.backlight()),
-            ("channel", self.tv.channel()),
-            ("signal_strength", self.tv.signal_strength()),
+        # Each of these is its own full TCP round trip (connect, auth, two
+        # command steps) and can legitimately take seconds. Look the method
+        # up and call it fresh right before awaiting it, rather than
+        # building every coroutine object upfront in a tuple literal - if
+        # an earlier field's await gets cancelled (a config reload mid-poll,
+        # a slow/unresponsive TV blowing past the update interval), any
+        # coroutine that was constructed but never reached is silently
+        # dropped un-awaited, which is exactly what a "coroutine was never
+        # awaited" RuntimeWarning means.
+        for attr, method_name in (
+            ("volume", "volume"),
+            ("is_muted", "mute"),
+            ("source_code", "input_source"),
+            ("aspect_ratio", "aspect_ratio"),
+            ("audio_selection", "audio_selection"),
+            ("av_mode", "av_mode"),
+            ("backlight", "backlight"),
+            ("channel", "channel"),
+            ("signal_strength", "signal_strength"),
         ):
             try:
-                setattr(data, attr, await coro)
+                setattr(data, attr, await getattr(self.tv, method_name)())
             except (AquosConnectionError, AquosCommandError) as err:
                 # Not every model supports every command - leave that field
                 # as None rather than failing the whole update.
-                _LOGGER.debug("Could not read %s: %s", attr, err)
+                self._log_field_failure(attr, err)
 
         return data

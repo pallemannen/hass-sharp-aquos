@@ -22,3 +22,16 @@ class AquosEntity(CoordinatorEntity[AquosDataUpdateCoordinator]):
             manufacturer="Sharp",
             model=coordinator.data.model if coordinator.data else None,
         )
+
+    def _handle_coordinator_update(self) -> None:
+        """Keep the device's model in sync as the coordinator learns it.
+
+        The model is only queried once the TV is confirmed on (see
+        AquosDataUpdateCoordinator), so it's commonly still unknown on the
+        very first refresh that built _attr_device_info above. Without this,
+        a later successful read would update coordinator.data.model but
+        never make it back into the entity's device info.
+        """
+        if self.coordinator.data and self.coordinator.data.model:
+            self._attr_device_info["model"] = self.coordinator.data.model
+        super()._handle_coordinator_update()
