@@ -4,7 +4,15 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow the integration's `manifest.json` version.
 
-## [Unreleased]
+## [0.1.4] - 2026-08-21
+
+### Fixed
+- `brand/icon.png` and `brand/logo.png` were byte-identical copies of the
+  same image. `icon.png` is now a distinct horizontal SHARP/AQUOS lockup;
+  `logo.png` stays the original stacked design from the stock Aquos
+  integration.
+
+## [0.1.3] - 2026-08-21
 
 ### Changed
 - Field read failures are now logged differently depending on what kind of
