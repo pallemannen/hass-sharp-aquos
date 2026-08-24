@@ -19,6 +19,8 @@ Home Assistant integration for Sharp Aquos TVs creating a Media Player entity to
 
 No YAML editing or manually edited config files needed - everything is set up through the UI.
 
+**Note**: This integration and the built-in integration are mutually exclusive. They use the same `aquostv` domain, so they should not be used simultaneously.
+
 ## What you get
 
 **Commands**
