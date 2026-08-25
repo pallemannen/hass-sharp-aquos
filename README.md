@@ -46,6 +46,8 @@ This integration should work with network-enabled Sharp Aquos LCD/LED television
 - LE Series (High-End & Mid-Range): Models starting with LC- and ending with LE or U (e.g., LC-60LE650U, LC-70LE732U, LC-52LE835U).
 - UD / EQ / SQ Series (Early 4K/Premium): Flagship models like the LC-UD27U, LC-EQ10U, and LC-SQ15U.
 
+The stock Sharp Aquos TV integration has a list of known supported models here(https://github.com/home-assistant/home-assistant.io/blob/current/source/_integrations/aquostv.markdown).
+
 ## How to check and enable
 
 - You need a network enabled TV - either with an ethernet RJ-45 jack or a WiFi module.
