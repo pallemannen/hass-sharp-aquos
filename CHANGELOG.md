@@ -4,6 +4,16 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow the integration's `manifest.json` version.
 
+## [0.1.5] - 2026-08-29
+
+### Added
+- Legacy `media_player: - platform: aquostv` YAML config is now automatically
+  imported into a config entry on startup, matching core's original
+  `aquostv` PLATFORM_SCHEMA field-for-field (including `timeout`/`retries`,
+  which are accepted and ignored - this implementation has no equivalent).
+  A repair issue is raised afterward pointing at removing the YAML block,
+  whether the import succeeded or failed to connect.
+
 ## [0.1.4] - 2026-08-21
 
 ### Fixed

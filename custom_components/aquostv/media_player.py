@@ -2,21 +2,122 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
+import voluptuous as vol
+
+from homeassistant import config_entries
 from homeassistant.components.media_player import (
+    PLATFORM_SCHEMA as MEDIA_PLAYER_PLATFORM_SCHEMA,
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
     MediaPlayerState,
     MediaType,
 )
-from homeassistant.const import CONF_NAME
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.helpers import config_validation as cv, issue_registry as ir
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
 from . import AquosConfigEntry
-from .const import CONF_POWER_ON_ENABLED, SOURCES, SOURCES_REVERSE
+from .const import CONF_POWER_ON_ENABLED, DEFAULT_NAME, DEFAULT_PORT, DOMAIN, SOURCES, SOURCES_REVERSE
 from .entity import AquosEntity
+
+_LOGGER = logging.getLogger(__name__)
+
+# Core's original `aquostv` integration's own defaults for fields omitted
+# from YAML - NOT this fork's DEFAULT_USERNAME/DEFAULT_PASSWORD/
+# DEFAULT_POWER_ON_ENABLED constants, which are deliberately different
+# (blank/True) for the interactive UI flow. A faithful import of someone's
+# existing YAML has to reproduce what core actually did with it, not this
+# fork's newer preferred defaults.
+_YAML_DEFAULT_USERNAME = "admin"
+_YAML_DEFAULT_PASSWORD = "password"
+_YAML_DEFAULT_POWER_ON_ENABLED = False
+
+# Matches core's original `aquostv` PLATFORM_SCHEMA field-for-field, so
+# existing `media_player: - platform: aquostv` YAML from that integration
+# keeps parsing. `timeout` and `retries` are accepted-and-ignored: this
+# implementation doesn't have equivalents for them.
+PLATFORM_SCHEMA = MEDIA_PLAYER_PLATFORM_SCHEMA.extend(
+    {
+        vol.Required(CONF_HOST): cv.string,
+        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+        vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
+        vol.Optional(CONF_USERNAME, default=_YAML_DEFAULT_USERNAME): cv.string,
+        vol.Optional(CONF_PASSWORD, default=_YAML_DEFAULT_PASSWORD): cv.string,
+        vol.Optional("timeout"): cv.string,
+        vol.Optional("retries"): cv.string,
+        vol.Optional(
+            CONF_POWER_ON_ENABLED, default=_YAML_DEFAULT_POWER_ON_ENABLED
+        ): cv.boolean,
+    },
+    extra=vol.REMOVE_EXTRA,
+)
+
+
+async def async_setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    async_add_entities: AddEntitiesCallback,
+    discovery_info: DiscoveryInfoType | None = None,
+) -> None:
+    """Import a legacy YAML-configured TV into a config entry.
+
+    This platform never adds entities directly - `async_setup_entry` does
+    that once the import below lands as a real config entry. This function
+    only exists to catch YAML config and migrate it.
+    """
+    import_data = {
+        CONF_HOST: config[CONF_HOST],
+        CONF_PORT: config[CONF_PORT],
+        CONF_USERNAME: config[CONF_USERNAME],
+        CONF_PASSWORD: config[CONF_PASSWORD],
+        CONF_NAME: config[CONF_NAME],
+        CONF_POWER_ON_ENABLED: config[CONF_POWER_ON_ENABLED],
+    }
+    issue_id_suffix = f"{config[CONF_HOST]}_{config[CONF_PORT]}"
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_IMPORT},
+        data=import_data,
+    )
+
+    if (
+        result.get("type") is FlowResultType.ABORT
+        and result.get("reason") != "already_configured"
+    ):
+        ir.async_create_issue(
+            hass,
+            DOMAIN,
+            f"yaml_deprecation_import_issue_{issue_id_suffix}",
+            breaks_in_ha_version=None,
+            is_fixable=False,
+            is_persistent=False,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="yaml_deprecation_import_issue",
+            translation_placeholders={
+                "reason": str(result.get("reason")),
+                "host": config[CONF_HOST],
+            },
+        )
+        return
+
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        f"yaml_deprecation_{issue_id_suffix}",
+        breaks_in_ha_version=None,
+        is_fixable=False,
+        is_persistent=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="yaml_deprecation",
+        translation_placeholders={"host": config[CONF_HOST]},
+    )
 
 
 async def async_setup_entry(

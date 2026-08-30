@@ -22,7 +22,8 @@
       "cannot_connect": "Could not connect to the TV. Check the host, port, and that IP/network control is enabled in the TV's settings."
     },
     "abort": {
-      "already_configured": "This TV is already configured."
+      "already_configured": "This TV is already configured.",
+      "cannot_connect": "Could not connect to the TV. Check the host, port, and that IP/network control is enabled in the TV's settings."
     }
   },
   "entity": {
@@ -31,6 +32,16 @@
       "av_mode": { "name": "AV mode" },
       "backlight": { "name": "Backlight" },
       "signal_strength": { "name": "Signal strength" }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "Legacy YAML configuration detected for {host}",
+      "description": "The Sharp Aquos TV at {host} is configured in `configuration.yaml`. This integration now supports UI-based configuration and this TV has been migrated to the new UI automatically. Please remove its `media_player: - platform: aquostv` block from `configuration.yaml` to avoid future issues."
+    },
+    "yaml_deprecation_import_issue": {
+      "title": "Legacy YAML configuration import issue for {host}",
+      "description": "Attempting to import the Sharp Aquos TV at {host} from YAML failed for reason: {reason}. 1) Remove the YAML block from `configuration.yaml`, 2) Restart Home Assistant, 3) Add the TV using the UI configuration flow instead."
     }
   }
 }
