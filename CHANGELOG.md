@@ -4,6 +4,23 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow the integration's `manifest.json` version.
 
+## [0.2.0] - 2026-10-19
+
+### Changed
+- The integration's domain is now `sharp_aquostv` instead of `aquostv`, so it
+  no longer overrides the built-in Sharp Aquos TV integration (required for the
+  default HACS store).
+- YAML import now uses `media_player: - platform: sharp_aquostv`. Change
+  `platform: aquostv` to `platform: sharp_aquostv` to move a TV over from the
+  built-in integration.
+
+- The HACS validation no longer ignores the brands check; the in-tree `brand/`
+  icons satisfy it.
+
+### Upgrading
+- Config entries created by 0.1.x (domain `aquostv`) are not picked up. Remove
+  the old entry and add the TV again.
+
 ## [0.1.5] - 2026-08-29
 
 ### Added

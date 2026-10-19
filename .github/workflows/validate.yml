@@ -33,8 +33,3 @@ jobs:
         uses: "hacs/action@main"
         with:
           category: "integration"
-          # Local brand icons already work via HA 2026.3+'s inline Brands
-          # Proxy API (custom_components/<domain>/brand/{icon,logo}.png) -
-          # not yet submitted to the separate home-assistant/brands repo,
-          # which this check validates against instead.
-          ignore: "brands"

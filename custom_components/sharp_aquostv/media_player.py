@@ -38,10 +38,10 @@ _YAML_DEFAULT_USERNAME = "admin"
 _YAML_DEFAULT_PASSWORD = "password"
 _YAML_DEFAULT_POWER_ON_ENABLED = False
 
-# Matches core's original `aquostv` PLATFORM_SCHEMA field-for-field, so
-# existing `media_player: - platform: aquostv` YAML from that integration
-# keeps parsing. `timeout` and `retries` are accepted-and-ignored: this
-# implementation doesn't have equivalents for them.
+# Matches core's original `aquostv` PLATFORM_SCHEMA field-for-field, so YAML
+# from that integration keeps parsing once `platform: aquostv` is changed to
+# `platform: sharp_aquostv`. `timeout` and `retries` are accepted-and-ignored:
+# this implementation doesn't have equivalents for them.
 PLATFORM_SCHEMA = MEDIA_PLAYER_PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_HOST): cv.string,

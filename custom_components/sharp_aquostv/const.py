@@ -1,6 +1,6 @@
 """Constants for the Sharp Aquos TV integration."""
 
-DOMAIN = "aquostv"
+DOMAIN = "sharp_aquostv"
 
 CONF_POWER_ON_ENABLED = "power_on_enabled"
 
