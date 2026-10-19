@@ -19,7 +19,15 @@ Home Assistant integration for Sharp Aquos TVs creating a Media Player entity to
 
 No YAML editing or manually edited config files needed - everything is set up through the UI.
 
-**Note**: This integration and the built-in integration are mutually exclusive. They use the same `aquostv` domain, so they should not be used simultaneously.
+**Note**: This integration replaces the built-in Sharp Aquos TV integration (`aquostv`). Don't set up the same TV in both.
+
+## Moving from the built-in integration
+
+If your TV is configured in `configuration.yaml` with `platform: aquostv`, change it to `platform: sharp_aquostv` and restart Home Assistant. The TV is imported into a UI config entry, and a repair asks you to remove the YAML block afterwards. Or remove the YAML block and add the TV through the UI as above.
+
+## Upgrading from version 0.1.x
+
+Versions before 0.2.0 used the `aquostv` domain. After updating, remove the old Sharp Aquos TV entry under **Settings → Devices & Services** and add the TV again.
 
 ## What you get
 

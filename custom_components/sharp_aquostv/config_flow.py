@@ -57,7 +57,7 @@ class AquosConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_import(self, import_data: dict[str, Any]) -> ConfigFlowResult:
-        """Handle import of legacy `media_player: - platform: aquostv` YAML config."""
+        """Handle import of `media_player: - platform: sharp_aquostv` YAML config."""
         await self.async_set_unique_id(f"{import_data[CONF_HOST]}:{import_data[CONF_PORT]}")
         self._abort_if_unique_id_configured()
 
