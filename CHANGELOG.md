@@ -10,7 +10,8 @@ follow the integration's `manifest.json` version.
 - The TV's network power-on setting (`RSPW`) is no longer written on every
   poll. It's written once, when the TV first answers, and only if "Allow Home
   Assistant to turn the TV on" is enabled. With the option off, the TV's own
-  setting is left untouched.
+  setting is left untouched. If the TV stops answering (for example after losing
+  power), the setting is written again the next time it answers.
 
 ## [0.2.0] - 2026-10-19
 

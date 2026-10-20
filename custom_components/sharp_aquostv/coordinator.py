@@ -82,7 +82,10 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
             # Treat unreachable as off rather than failing the whole
             # coordinator - a TV that's fully unplugged/asleep will simply
             # not answer, and that's a legitimate (common) state, not an
-            # integration error.
+            # integration error. A TV that drops off the network may have
+            # lost power, and with it its power-on setting, so write that
+            # again the next time it answers.
+            self._power_on_written = False
             return AquosData(is_on=False)
 
         # Turn on the TV's "accept power-on over TCP/IP" setting once, on the
