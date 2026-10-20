@@ -48,6 +48,7 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
         )
         self.tv = tv
         self._power_on_enabled = power_on_enabled
+        self._power_on_written = False
         self._model: str | None = None
         self._warned_fields: set[str] = set()
 
@@ -81,15 +82,22 @@ class AquosDataUpdateCoordinator(DataUpdateCoordinator[AquosData]):
             # Treat unreachable as off rather than failing the whole
             # coordinator - a TV that's fully unplugged/asleep will simply
             # not answer, and that's a legitimate (common) state, not an
-            # integration error.
+            # integration error. A TV that drops off the network may have
+            # lost power, and with it its power-on setting, so write that
+            # again the next time it answers.
+            self._power_on_written = False
             return AquosData(is_on=False)
 
-        # Keep the TV's "accept power-on over TCP/IP" flag in sync with the
-        # config option on every poll, same as upstream did.
-        try:
-            await self.tv.set_power_on_command_settings(self._power_on_enabled)
-        except (AquosConnectionError, AquosCommandError) as err:
-            self._log_field_failure("power_on_command_settings", err)
+        # Turn on the TV's "accept power-on over TCP/IP" setting once, on the
+        # first poll the TV answers, and only if the option is on. Never
+        # write it when the option is off, so a setting made on the TV
+        # itself (or by another controller) is left alone.
+        if self._power_on_enabled and not self._power_on_written:
+            try:
+                await self.tv.set_power_on_command_settings(True)
+                self._power_on_written = True
+            except (AquosConnectionError, AquosCommandError) as err:
+                self._log_field_failure("power_on_command_settings", err)
 
         if not is_on:
             return AquosData(is_on=False, model=self._model)
