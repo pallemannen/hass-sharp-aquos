@@ -4,6 +4,14 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow the integration's `manifest.json` version.
 
+## [0.2.1] - 2026-10-20
+
+### Fixed
+- The TV's network power-on setting (`RSPW`) is no longer written on every
+  poll. It's written once, when the TV first answers, and only if "Allow Home
+  Assistant to turn the TV on" is enabled. With the option off, the TV's own
+  setting is left untouched.
+
 ## [0.2.0] - 2026-10-19
 
 ### Changed
