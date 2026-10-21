@@ -109,4 +109,4 @@ Based on the official Sharp Aquos TV integration: https://www.home-assistant.io/
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE). Parts are derived from Home Assistant Core's `aquostv` integration, licensed under Apache-2.0; see [NOTICE](NOTICE) for which parts and [LICENSES/Apache-2.0.txt](LICENSES/Apache-2.0.txt) for the license text.

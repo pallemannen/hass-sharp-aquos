@@ -4,6 +4,13 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow the integration's `manifest.json` version.
 
+## [0.2.2] - 2026-10-21
+
+### Added
+- `NOTICE` and `LICENSES/Apache-2.0.txt`: the upstream copyright notice and
+  license for the parts derived from Home Assistant Core's `aquostv`
+  integration (YAML schema and defaults, source mapping). Own code stays MIT.
+
 ## [0.2.1] - 2026-10-20
 
 ### Fixed
