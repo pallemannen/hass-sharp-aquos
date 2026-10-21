@@ -1,0 +1,18 @@
+hass-sharp-aquos
+Copyright (c) 2026 Patrik Bodin
+Licensed under the MIT License (see LICENSE).
+
+This project contains parts derived from Home Assistant Core's built-in
+Sharp Aquos TV integration (homeassistant/components/aquostv),
+https://github.com/home-assistant/core
+Copyright Home Assistant Core contributors
+Licensed under the Apache License, Version 2.0 (see LICENSES/Apache-2.0.txt).
+
+Derived parts:
+- custom_components/sharp_aquostv/media_player.py: the YAML PLATFORM_SCHEMA
+  and its defaults (username "admin", password "password", power_on_enabled
+  false), kept so existing aquostv YAML can be imported.
+- custom_components/sharp_aquostv/const.py: DEFAULT_NAME, DEFAULT_PORT and
+  the input source code mapping (SOURCES, codes 0-5).
+
+All other code is original to this project and licensed under MIT.
