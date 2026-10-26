@@ -7,7 +7,7 @@ Home Assistant integration for Sharp Aquos TVs creating a Media Player entity to
 
 ## Installation
 
-1. Add this repository to HACS as a custom repository (category "Integration"), then install "Sharp Aquos TV".
+1. Open HACS, search for "Sharp Aquos TV" and install it. Or use the "Open in HACS" button above.
 2. Restart Home Assistant.
 3. Go to **Settings → Devices & Services → Add Integration**, search for "Sharp Aquos TV", and fill in:
    - **TV IP address**
