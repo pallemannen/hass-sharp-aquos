@@ -4,6 +4,12 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow the integration's `manifest.json` version.
 
+## [0.2.3] - 2026-11-27
+
+### Fixed
+
+- Brand images meet Home Assistant's sizes: `brand/icon.png` is 256×256 (was 128×128), made from the logo.
+
 ## [0.2.2] - 2026-10-21
 
 ### Added
